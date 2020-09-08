@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Document</title>
+</head>
+<body>
+    {% if items %}
+    {% for i in items%}
+    <p>{{ i.raw_m}}
+    {{ i.unit}}
+    {{ i.quantity}}</p><br>
+    {% endfor %}
+    {% else %}
+    <p>No items to display</p>
+    {% endif %}
+</body>
+</html>
