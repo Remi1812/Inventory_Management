@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Document</title>
+</head>
+<body>
+    
+    {% if rawm %}  
+    {% for i in rawm %}
+    <form method="POST">
+    {% csrf_token %}  
+    {{i.pname}}
+    <input type="hidden" name="val" value="{{i.pid}}">
+    <input type="submit" value="delete">
+     </form>
+     {% endfor %}
+     {% else %}
+     <p>No products to display</p>
+     {% endif %}
+     <a href="{% url 'adprod' %}">Add new product</a><br><br>
+
+</body>
+</html>

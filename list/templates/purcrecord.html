@@ -6,9 +6,16 @@
 <body>
     {% if items %}
     {% for i in items%}
-    <p>{{ i.raw_m}}
+    <p>
+    {{ i.rmat}}
     {{ i.unit}}
-    {{ i.quantity}}
+    {{ i.Quantity}}
+    {{ i.vmat}}
+    {{ i.price}}
+    {{ i.Quantity}}
+    {{ i.payment}}
+    <a href ="{% url 'editpurchase' eid=i.id %}">edit</a>
+    <a href ="{% url 'deletepur' did=i.id%}">delete</a>
 </p><br>
     {% endfor %}
     {% else %}

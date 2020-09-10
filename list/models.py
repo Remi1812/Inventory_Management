@@ -49,6 +49,10 @@ class ledger(models.Model):
     unit=models.ForeignKey(squ_master,on_delete=models.CASCADE)
     quantity=models.FloatField()
 
+    def __str__(self):
+        return str(self.raw_m)
+
+
 class purchase(models.Model):
     rmat=models.ForeignKey(raw_master,on_delete=models.CASCADE)
     Quantity=models.IntegerField()
@@ -62,6 +66,10 @@ class purchase(models.Model):
     )
     payment = models.CharField(max_length=6, choices=CHOICES, default='credit')
     #date=models.DateField(auto_now_add=True,default=None)
+     
+    def __str__(self):
+        return str(self.rmat)
+
 
 class sale(models.Model):
     product=models.ForeignKey(product_master,on_delete=models.CASCADE)
@@ -76,4 +84,8 @@ class sale(models.Model):
     )
     payment = models.CharField(max_length=6, choices=CHOICES, default='credit')
     #date=models.DateField(auto_now_add=True,default=None)
+
+    def __str__(self):
+        return str(self.product)
+
     

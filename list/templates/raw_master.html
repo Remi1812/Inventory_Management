@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Document</title>
+</head>
+<body>
+    
+    {% if rawm %}  
+    {% for i in rawm %}
+    <form method="POST">
+    {% csrf_token %}  
+    {{i.rname}}
+    <input type="hidden" name="val" value="{{i.rid}}">
+    <input type="submit" value="delete">
+     </form>
+     {% endfor %}
+     {% else %}
+     <p>No raw Material to display</p>
+     {% endif %}
+     <a href="{% url 'addraw' %}">Add new Raw Material</a><br><br>
+    
+</body>
+</html>

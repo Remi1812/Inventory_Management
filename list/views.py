@@ -6,6 +6,45 @@ from django.contrib import messages
 from django.http import HttpResponse
 from .forms import *
 
+def ledgecal(material,un,quan,bool,old_quan):
+    try:
+        #updating the quantity in the ledger
+        ins=ledger.objects.get(raw_m=material,unit=un)
+        if bool:
+            ins.quantity+=quan
+        else:
+            ins.quantity-=old_quan
+            ins.quantity+=quan    
+        ins.save()
+    except:
+        #creating new instance in ledger
+        l=ledger(raw_m=material,unit=un,quantity=quan)
+        l.save()
+           
+
+def raw(request):
+    if request.method=='POST':
+        i=request.POST.get('val')
+        print(i)
+        raw_master.objects.get(rid=i).delete()
+        return redirect('raw')
+    else:    
+        mat=raw_master.objects.all()
+        context={'rawm':mat}
+        return render(request,'raw_master.html',context)
+
+def product(request):
+    if request.method=='POST':
+        i=request.POST.get('val')
+        print(i)
+        product_master.objects.get(pid=i).delete()
+        return redirect('product')
+    else:    
+        mat=product_master.objects.all()
+        context={'rawm':mat}
+        return render(request,'product.html',context)
+
+
 def index(request):
     if request.method=='POST':
         form=raw_d(request.POST)
@@ -13,15 +52,7 @@ def index(request):
             material=(form.cleaned_data['rmat'])
             un=(form.cleaned_data['unit'])
             quan=(form.cleaned_data['Quantity'])
-            try:
-                #updating the quantity in the ledger
-                ins=ledger.objects.get(raw_m=material,unit=un)
-                ins.quantity+=quan
-                ins.save()
-            except:
-                #creating new instance in ledger
-                l=ledger(raw_m=material,unit=un,quantity=quan)
-                l.save()
+            ledgecal(material,un,quan,True,None)
             form.save()
         else:
             return HttpResponse("not valid data")
@@ -110,6 +141,16 @@ def adcustomer(request):
         return render(request,'raw.html',context)
 
 
+def deletepur(request,did):
+    ins=purchase.objects.get(id=did)
+    led_ins=ledger.objects.get(raw_m=ins.rmat,unit=ins.unit)
+    led_ins.quantity-=ins.Quantity
+    print(led_ins.quantity)
+    led_ins.save()
+    if led_ins.quantity == 0:
+        led_ins.delete()
+    ins.delete()    
+    return redirect('purchaserec')
 
 def prod(request):
     if request.method == 'POST':
@@ -135,20 +176,44 @@ def ledgers(request):
     
     return render(request,'ledg.html',{'items':obj})
      
-def sale(request):
+def saless(request):
     if request.method=='POST':
         form=sales(request.POST)
         if form.is_valid():
             form.save()
         else:
             return HttpResponse("not valid data")
-        return redirect('sale')
+        return redirect('salerec')
     else:        
         form=sales()
         context={'form':form}
         return render(request,'sales.html',context)
 
+   
 def salerec(request):
-    obj=purchase.objects.all()
+    obj=sale.objects.all()
     return render(request,'salerecord.html',{'items':obj})
+
+def purchaserec(request):
+    obj=purchase.objects.all()
+    return render(request,'purcrecord.html',{'items':obj})
     
+def editpur(request,eid):
+    p=purchase.objects.get(id=eid)
+    if request.method=='POST':
+        form=raw_d(request.POST)
+        if form.is_valid():
+            ledgecal(form.cleaned_data['rmat'],form.cleaned_data['unit'],form.cleaned_data['Quantity'],False,p.Quantity)
+            p.rmat=form.cleaned_data['rmat']
+            p.Quantity=form.cleaned_data['Quantity']
+            p.unit=form.cleaned_data['unit']
+            p.price=form.cleaned_data['price']
+            p.vmat=form.cleaned_data['vmat']
+            p.payment=form.cleaned_data['payment']
+            p.save()
+            return redirect('purchaserec')
+        else:
+            print("Not valid data")    
+    else: 
+        form=raw_d(instance=p)
+    return render(request,'editpur.html',{'pform':form})
